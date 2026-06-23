@@ -1,0 +1,21 @@
+package com.highwayhelper.security;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+
+@Component
+public class SecurityUtils {
+
+    public UserPrincipal getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !(authentication.getPrincipal() instanceof UserPrincipal principal)) {
+            throw new IllegalStateException("No authenticated user found");
+        }
+        return principal;
+    }
+
+    public Long getCurrentUserId() {
+        return getCurrentUser().getId();
+    }
+}

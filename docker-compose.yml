@@ -1,0 +1,36 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: highway-helper-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: highway_helper
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: highway-helper-app
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: highway_helper
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      JWT_SECRET: highway-helper-super-secret-key-change-in-production-min-256-bits!!
+    ports:
+      - "8080:8080"
+
+volumes:
+  mysql_data:
